@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import {toast} from "react-toastify"
 import * as yup from "yup";
 
 const useForm = () => {
@@ -15,13 +16,14 @@ const useForm = () => {
       })
       .then((res) => {
         console.log(res.data);
+        toast.success("Login successful")
         localStorage.setItem("jwt", res.data.token);
+        navigate("/");
       })
       .catch((err) => {
+        toast.error(err.response.data.msg);
         console.error(err);
-      }).finally(()=>{
-        navigate("/");
-      });
+      })
     setUser(true);
     console.log(user);
     setSubmitting(false);

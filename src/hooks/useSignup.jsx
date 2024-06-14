@@ -3,6 +3,7 @@ import * as yup from "yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContexts";
+import { toast } from "react-toastify";
 
 const useSignup = () => {
   //   const { setUser } = useContext(GlobalContext);
@@ -19,13 +20,15 @@ const useSignup = () => {
       })
       .then((res) => {
         console.log(res.data);
+        toast.success("Registration completed")
+        navigate("/");
       })
       .catch((err) => {
         console.log(err);
+        toast.error(err.response.data.msg);
       })
       .finally(() => {
         console.log(values);
-        navigate("/");
         setSubmitting(false);
       });
   };

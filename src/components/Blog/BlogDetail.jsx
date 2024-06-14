@@ -1,6 +1,23 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Box, Button, Grid, Stack, TextField, Typography } from "@mui/material";
+import moment from "moment";
+import {
+  Button,
+  Container,
+  CssBaseline,
+  Grid,
+  Stack,
+  TextField,
+  Box,
+  Avatar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Typography,
+} from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+
 import { styled } from "@mui/system";
 import { useParams } from "react-router-dom";
 import { AllPosts } from "./dummyData";
@@ -95,6 +112,11 @@ const Line = styled("div")({
   background: "#C0C0CF",
 });
 const BlogDetail = () => {
+  const [comments] = useState([
+    { text: "This is the first comment!", date: "2024-06-14 10:00:00" },
+    { text: "Here is another comment.", date: "2024-06-14 10:05:00" },
+    { text: "And a third one.", date: "2024-06-14 10:10:00" },
+  ]);
   const [content, setContent] = useState();
   const [name, setName] = useState();
   const [email, setEmail] = useState();
@@ -219,6 +241,51 @@ const BlogDetail = () => {
                 </Stack>
                 <Line sx={{ margin: "1rem 0 !important" }} />
               </MainContent>
+
+              <Container>
+                <CssBaseline />
+                <Typography variant="h4" align="left" gutterBottom>
+                  Comment Section
+                </Typography>
+                <Box
+                  sx={{
+                    width: "100%",
+                    maxWidth: 600,
+                    margin: "0",
+                    padding: 2,
+                    borderRadius: 2,
+                  }}
+                >
+                  <List>
+                    {comments.map((comment, index) => (
+                      <>
+                        <ListItem key={index} alignItems="flex-start">
+                          <ListItemAvatar>
+                            <Avatar>
+                              <AccountCircleIcon />
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={comment.text}
+                            secondary={moment(comment.date).format('dddd, MMMM Do YYYY')}
+                          />
+                        </ListItem>
+                        <Typography variant="p">
+                          {" "}
+                          Elementum curabitur vitae nunc sed velit dignissim
+                          sodales. Molestie a iaculis at erat pellentesque
+                          adipiscing commodo elit at. Orci dapibus ultrices in
+                          iaculis nunc sed. Nam aliquam sem et tortor consequat
+                          id porta nibh. Mauris pharetra et ultrices neque
+                          ornare aenean euismod elementum. Nascetur ridiculus
+                          mus mauris vitae ultricies leo. Semper auctor.
+                        </Typography>
+                      </>
+                    ))}
+                  </List>
+                  <Line sx={{ margin: "1rem 0 !important" }} />
+                </Box>
+              </Container>
               <Box mt={4} ml={4}>
                 <Typography
                   sx={{

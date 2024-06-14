@@ -1,21 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PostFooter, PostTags, PostWrapper, Tag } from './PostsStyling';
 import { Avatar, Stack, Typography } from '@mui/material';
 import { ChatBubbleOutline, TurnedInNot } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import moment from 'moment/moment';
 
-function Post({ post }) {
+function getRandomElement(arr) {
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  return arr[randomIndex];
+}
+
+function Post({ post, AllPosts }) {
   const navigate = useNavigate();
+  const [thisPost] = useState(getRandomElement(AllPosts))
   return (
-    <PostWrapper onClick={() => navigate(`/post/${post.id}`)}>
+    <PostWrapper onClick={() => navigate(`/post/${post._id}`)}>
       <Stack direction="row" spacing={2} alignItems={"center"}>
-        <Avatar sx={{ height: "60px", width: "60px" }} alt={post.author} src={post.imageUrl} />
+        <Avatar sx={{ height: "60px", width: "60px" }} alt={thisPost.author} src={thisPost.imageUrl} />
         <Stack spacing={0.8}>
           <Typography variant="p" sx={{ fontSize: { xxs: "18px", sm: "20px", md: "24px" }, color: "primary.textGray" }}>
-            {post.author}
+            {thisPost.author}
           </Typography>
           <Typography variant="p" sx={{ fontSize: { xxs: "12px", sm: "14px", md: "16px" }, color: "#666687" }}>
-            {post.date}
+            {moment(post.createAt).format('dddd, MMMM Do YYYY')}
           </Typography>
         </Stack>
       </Stack>
@@ -24,7 +31,7 @@ function Post({ post }) {
           {post.title}
         </Typography>
         <PostTags>
-          {post.tags.map(tag => (
+          {thisPost.tags.map(tag => (
             <Tag key={tag} className="tag">#{tag}</Tag>
           ))}
         </PostTags>

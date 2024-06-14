@@ -7,6 +7,8 @@ import theme from "../src/theme/theme.jsx";
 import { CssBaseline } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import GlobalProvider from "./context/GlobalContexts.jsx";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -15,6 +17,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <GlobalProvider>
         <BrowserRouter>
           <App />
+          <ToastContainer />
         </BrowserRouter>
       </GlobalProvider>
     </ThemeProvider>

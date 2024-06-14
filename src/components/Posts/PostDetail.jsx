@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -11,10 +11,12 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
+import moment from "moment/moment";
 import { styled } from "@mui/system";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Favorite, Share, Comment } from "@mui/icons-material";
 import { AllPosts } from "../Blog/dummyData";
+import axios from "axios";
 
 const StyledWrapper = styled(Box)({
   padding: "2rem",
@@ -61,8 +63,51 @@ const TagButton = styled(Button)({
 });
 
 const PostDetail = () => {
+  const [content, setContent] = useState();
+  const [name, setName] = useState();
+  const [email, setEmail] = useState();
   const { id } = useParams();
-  const post = AllPosts.find((post) => post.id === parseInt(id));
+  const navigate = useNavigate();
+  // const post = AllPosts.find((post) => post.id === parseInt(id));
+
+  const [post, setPost] = useState(null);
+  useEffect(() => {
+    axios
+      .get("https://val-0rnm.onrender.com/api/posts")
+      .then((res) => {
+        console.log(res.data);
+        setPost(res.data.find((post) => post._id === id));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  const submitComment = (e) => {
+    // e.preventDefault();
+    const token = localStorage.getItem("jwt");
+
+    const axiosInstance = axios.create({
+      headers: {
+        "x-auth-token": `${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    axiosInstance
+      .post(`https://val-0rnm.onrender.com/api/posts/${id}/comment`, {
+        name,
+        content,
+        email,
+      })
+      .then((response) => {
+        navigate(`/post/${id}`);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
 
   if (!post) {
     return <Typography variant="h6">Post not found</Typography>;
@@ -78,7 +123,7 @@ const PostDetail = () => {
               <Box>
                 <Typography variant="h6">{post.author}</Typography>
                 <Typography variant="caption" color="textSecondary">
-                  {post.date}
+                  {moment(post.createAt).format("dddd, MMMM Do YYYY")}
                 </Typography>
               </Box>
             </Stack>
@@ -118,33 +163,51 @@ const PostDetail = () => {
               Leave a Note
             </Typography>
             <Typography variant="body2" color="textSecondary" gutterBottom>
-              Fields marked * are mandatory. Your email address will be kept confidential
+              Fields marked * are mandatory. Your email address will be kept
+              confidential
             </Typography>
             <CommentSection>
-              <TextField
-                label="Comment"
-                variant="outlined"
-                fullWidth
-                multiline
-                rows={4}
-                required
-                sx={{ marginBottom: "1.5rem", backgroundColor: "transparent" }}
-              />
-              <TextField
-                label="Name"
-                variant="outlined"
-                fullWidth
-                required
-                sx={{ marginBottom: "1.5rem", backgroundColor: "transparent" }}
-              />
-              <TextField
-                label="Email address"
-                variant="outlined"
-                fullWidth
-                required
-                sx={{ marginBottom: "1.5rem", backgroundColor: "transparent" }}
-              />
-              <StyledButton variant="contained">Post comment</StyledButton>
+              <form onSubmit={submitComment}>
+                <TextField
+                  label="Comment"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  required
+                  sx={{
+                    marginBottom: "1.5rem",
+                    backgroundColor: "transparent",
+                  }}
+                />
+                <TextField
+                  label="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                  required
+                  sx={{
+                    marginBottom: "1.5rem",
+                    backgroundColor: "transparent",
+                  }}
+                />
+                <TextField
+                  label="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                  required
+                  sx={{
+                    marginBottom: "1.5rem",
+                    backgroundColor: "transparent",
+                  }}
+                />
+                <StyledButton type="submit" variant="contained">Post comment</StyledButton>
+              </form>
             </CommentSection>
           </Box>
           <Box mt={4}>
@@ -160,10 +223,10 @@ const PostDetail = () => {
                         <Avatar src="/path/to/avatar.jpg" />
                         <Box>
                           <Typography variant="body2" fontWeight="bold">
-                            {comment.user}
+                            {comment.name}
                           </Typography>
                           <Typography variant="caption" color="textSecondary">
-                            {comment.date}
+                            {moment(comment.createAt).format('dddd, MMMM Do YYYY')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -172,9 +235,17 @@ const PostDetail = () => {
                         color="primary.textGray"
                         sx={{ marginTop: "0.5rem" }}
                       >
-                        {comment.comment}
+                        {comment.content}
                       </Typography>
-                      <Button sx={{ textTransform: "none", color: "#0B6ED0", padding: "0" }}>Reply</Button>
+                      <Button
+                        sx={{
+                          textTransform: "none",
+                          color: "#0B6ED0",
+                          padding: "0",
+                        }}
+                      >
+                        Reply
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
